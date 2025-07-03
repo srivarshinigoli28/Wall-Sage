@@ -1,9 +1,12 @@
 import tkinter as tk
+import os
 from tkinter import colorchooser
 from tkinter import ttk, font
 from erase_tool import toggle_eraser
+from undo_redo import undo, redo
+from wallpaper_utils import save_canvas_as_image, set_as_wallpaper
 
-def setup_toolbar(root, state):
+def setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_stack, state):
     # toolbar
     toolbar = tk.Frame(root, bg="#d0e0f0", width=200)
     toolbar.pack(side="right", fill="y")
@@ -81,3 +84,37 @@ def setup_toolbar(root, state):
 
     # Pack it into the toolbar
     eraser_btn.pack(pady=10)
+
+    # unde redo buttons
+    tk.Button(toolbar, text="Undo", command=lambda: undo(canvas, drawing_lines, text_items, history_stack, redo_stack)).pack(pady=5)
+    tk.Button(toolbar, text="Redo", command=lambda: redo(canvas, drawing_lines, text_items, history_stack, redo_stack)).pack(pady=5)
+
+    def save_wallpaper_action():
+        output_path = "output_wallpaper.png"
+        save_canvas_as_image(
+            canvas.winfo_width(),
+            canvas.winfo_height(),
+            state.get("bg_img"),   # store bg_img in state when you load it
+            drawing_lines,
+            text_items,
+            output_path
+        )
+        print(f"Wallpaper saved to: {output_path}")
+
+    # tk.Button(toolbar, text="Save Wallpaper", command=save_wallpaper_action).pack(pady=10)
+
+    def set_wallpaper_action():
+        output_path = "output_wallpaper.png"
+        save_canvas_as_image(
+            canvas.winfo_width(),
+            canvas.winfo_height(),
+            state.get("bg_img"),
+            drawing_lines,
+            text_items,
+            output_path
+        )
+        set_as_wallpaper(os.path.abspath(output_path))
+        print("Wallpaper set successfully!")
+
+    tk.Button(toolbar, text="Set as Wallpaper", command=set_wallpaper_action).pack(pady=10)
+
