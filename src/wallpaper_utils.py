@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import os
 import ctypes
+import json
 
 def save_canvas_as_image(canvas_width, canvas_height, bg_img, drawing_lines, text_items, output_path):
     # Creating a blank image with white background
@@ -38,3 +39,14 @@ def set_as_wallpaper(image_path):
     # 3rd param is the image path
     # 4th param is update flags: 3 = update user profile + send change broadcast
     ctypes.windll.user32.SystemParametersInfoW(20, 0, image_path, 3)
+    
+def load_last_wallpaper():
+    try:
+        with open("last_wallpaper.json", "r") as f:
+            data = json.load(f)
+            path = data.get("path")
+            if path and os.path.exists(path):
+                return Image.open(path)
+    except Exception:
+        pass
+    return None

@@ -7,7 +7,8 @@ import json
 from strokes_tool import setup_stroke_bindings
 from ui import setup_toolbar
 from text_tool import setup_text_tool
-from wallpaper_utils import save_canvas_as_image
+from wallpaper_utils import save_canvas_as_image, load_last_wallpaper
+
 
 # drawing_lines = []  # [(points, color, brush_size)]
 text_items = []     # [(id, x, y, text, color, font_name, font_size)]
@@ -20,6 +21,18 @@ bg_image_path = "background.jpg"
 # font_choice = "Arial"
 # font_size = 20
 redo_stack = []
+
+# Shared state
+drawing_lines = []
+history_stack = []
+state = {
+    "current_color": "black",
+    "brush_size": 3,
+    "eraser_mode": False,
+    "font_choice" : "Arial",
+    "font_size" : 20,
+    "dragging_text": False
+}
 
 # retreiving height and width as the screen size
 screen_width = ctypes.windll.user32.GetSystemMetrics(0)
@@ -42,31 +55,26 @@ if os.path.exists(bg_image_path):
 else:
     bg_img = Image.new("RGB", (canvas_width, canvas_height), "white")
 bg_tk = ImageTk.PhotoImage(bg_img)
-canvas.create_image(0, 0, anchor="center", image=bg_tk)
 
-# Shared state
-drawing_lines = []
-history_stack = []
-state = {
-    "current_color": "black",
-    "brush_size": 3,
-    "eraser_mode": False,
-    "font_choice" : "Arial",
-    "font_size" : 20,
-    "dragging_text": False
-}
-state["bg_img"] = bg_img
+# Load last wallpaper if available
+loaded_bg = load_last_wallpaper()
+if loaded_bg:
+    state["bg_img"] = loaded_bg.resize((canvas_width, canvas_height))
+else:
+    # fallback background
+    if os.path.exists(bg_image_path):
+        state["bg_img"] = Image.open(bg_image_path).resize((canvas_width, canvas_height))
+    else:
+        state["bg_img"] = Image.new("RGB", (canvas_width, canvas_height), "white")
+
+bg_tk = ImageTk.PhotoImage(state["bg_img"])
+canvas.create_image(0, 0, anchor="nw", image=bg_tk)
+state["bg_tk"] = bg_tk  # Prevent garbage collection
+
+
 # Setup stroke events
 setup_stroke_bindings(canvas, drawing_lines, history_stack, state)
 setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_stack, state)
 setup_text_tool(canvas, root, text_items, history_stack, state)
-save_canvas_as_image(
-    canvas_width,
-    canvas_height,
-    bg_img,
-    drawing_lines,
-    text_items,
-    "output_wallpaper.png"
-)
 
 root.mainloop()

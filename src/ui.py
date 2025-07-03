@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+import json
 from tkinter import colorchooser
 from tkinter import ttk, font
 from erase_tool import toggle_eraser
@@ -126,6 +127,10 @@ def setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_s
         )
         set_as_wallpaper(os.path.abspath(output_path))
 
+        with open("last_wallpaper.json", "w") as f:
+            json.dump({"path": os.path.abspath(output_path)}, f)
+
+        # print(f"Wallpaper set and saved at: {output_path}")
 
     tk.Button(toolbar, text="Set as Wallpaper", command=set_wallpaper_action).pack(pady=10)
 
