@@ -89,6 +89,12 @@ def setup_text_tool(canvas, root, text_items, history_stack, state):
             text_drag_data["x"] = event.x
             text_drag_data["y"] = event.y
 
+            for i, (item_id, x, y, text, color, font_name, font_sz) in enumerate(text_items):
+                if item_id == text_id:
+                    new_x, new_y = canvas.coords(text_id)
+                    text_items[i] = (item_id, new_x, new_y, text, color, font_name, font_sz)
+                    break
+                
         def stop_drag(event):
             state["dragging_text"] = False
             
