@@ -3,9 +3,13 @@ import os
 import json
 from tkinter import colorchooser
 from tkinter import ttk, font
+from PIL import Image, ImageTk
+
 from erase_tool import toggle_eraser
 from undo_redo import undo, redo
-from wallpaper_utils import save_canvas_as_image, set_as_wallpaper
+from wallpaper_utils import save_canvas_as_image, set_as_wallpaper, set_and_save_wallpaper, reset_canvas
+
+
 from datetime import datetime
 
 def setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_stack, state):
@@ -91,46 +95,27 @@ def setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_s
     tk.Button(toolbar, text="Undo", command=lambda: undo(canvas, drawing_lines, text_items, history_stack, redo_stack)).pack(pady=5)
     tk.Button(toolbar, text="Redo", command=lambda: redo(canvas, drawing_lines, text_items, history_stack, redo_stack)).pack(pady=5)
 
-    def save_wallpaper_action():
+    # def save_wallpaper_action():
         
-        # Ensure the wallpapers directory exists
-        os.makedirs("wallpapers", exist_ok=True)
+    #     # Ensure the wallpapers directory exists
+    #     os.makedirs("wallpapers", exist_ok=True)
 
-        # Generate a unique timestamped filename
-        timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-        output_path = os.path.join("wallpapers", f"wallpaper_{timestamp}.png")
+    #     # Generate a unique timestamped filename
+    #     timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    #     output_path = os.path.join("wallpapers", f"wallpaper_{timestamp}.png")
 
-        save_canvas_as_image(
-            canvas.winfo_width(),
-            canvas.winfo_height(),
-            state.get("bg_img"),   # store bg_img in state when you load it
-            drawing_lines,
-            text_items,
-            output_path
-        )
-        print(f"Wallpaper saved to: {output_path}")
+    #     save_canvas_as_image(
+    #         canvas.winfo_width(),
+    #         canvas.winfo_height(),
+    #         state.get("bg_img"),   # store bg_img in state when you load it
+    #         drawing_lines,
+    #         text_items,
+    #         output_path
+    #     )
+    #     print(f"Wallpaper saved to: {output_path}")
 
     # tk.Button(toolbar, text="Save Wallpaper", command=save_wallpaper_action).pack(pady=10)
 
-    def set_wallpaper_action():
-        os.makedirs("wallpapers", exist_ok=True)
-        timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-        output_path = os.path.join("wallpapers", f"wallpaper_{timestamp}.png")
+    tk.Button(toolbar, text="Set as Wallpaper", command=lambda: set_and_save_wallpaper(canvas, drawing_lines, text_items, state)).pack(pady=10)
 
-        save_canvas_as_image(
-            canvas.winfo_width(),
-            canvas.winfo_height(),
-            state.get("bg_img"),
-            drawing_lines,
-            text_items,
-            output_path
-        )
-        set_as_wallpaper(os.path.abspath(output_path))
-
-        with open("last_wallpaper.json", "w") as f:
-            json.dump({"path": os.path.abspath(output_path)}, f)
-
-        # print(f"Wallpaper set and saved at: {output_path}")
-
-    tk.Button(toolbar, text="Set as Wallpaper", command=set_wallpaper_action).pack(pady=10)
-
+    tk.Button(toolbar, text="Reset to Default", command=lambda: reset_canvas(canvas, drawing_lines, text_items, history_stack, redo_stack, state)).pack(pady=10)

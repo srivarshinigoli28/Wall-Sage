@@ -1,7 +1,8 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageTk
 import os
 import ctypes
 import json
+from datetime import datetime
 
 def save_canvas_as_image(canvas_width, canvas_height, bg_img, drawing_lines, text_items, output_path):
     # Creating a blank image with white background
@@ -50,3 +51,40 @@ def load_last_wallpaper():
     except Exception:
         pass
     return None
+
+def set_and_save_wallpaper(canvas, drawing_lines, text_items, state):
+    os.makedirs("wallpapers", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    output_path = os.path.join("wallpapers", f"wallpaper_{timestamp}.png")
+
+    save_canvas_as_image(
+        canvas.winfo_width(),
+        canvas.winfo_height(),
+        state.get("bg_img"),
+        drawing_lines,
+        text_items,
+        output_path
+    )
+    set_as_wallpaper(os.path.abspath(output_path))
+
+    with open("last_wallpaper.json", "w") as f:
+        json.dump({"path": os.path.abspath(output_path)}, f)
+
+def reset_canvas(canvas, drawing_lines, text_items, history_stack, redo_stack, state):
+    drawing_lines.clear()
+    text_items.clear()
+    history_stack.clear()
+    redo_stack.clear()
+
+    if os.path.exists("background.jpg"):
+        bg_img = Image.open("background.jpg").resize(
+            (canvas.winfo_width(), canvas.winfo_height())
+        )
+    else:
+        bg_img = Image.new("RGB", (canvas.winfo_width(), canvas.winfo_height()), "white")
+
+    state["bg_img"] = bg_img
+    bg_tk = ImageTk.PhotoImage(bg_img)
+    state["bg_tk"] = bg_tk
+    canvas.delete("all")
+    canvas.create_image(0, 0, anchor="nw", image=bg_tk)
