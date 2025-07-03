@@ -3,6 +3,7 @@ import os
 import ctypes
 import json
 from datetime import datetime
+import matplotlib.font_manager as fm 
 
 def save_canvas_as_image(canvas_width, canvas_height, bg_img, drawing_lines, text_items, output_path):
     # Creating a blank image with white background
@@ -21,17 +22,14 @@ def save_canvas_as_image(canvas_width, canvas_height, bg_img, drawing_lines, tex
     # Drawing all text items
     for (_, x, y, text, color, font_name, font_sz) in text_items:
         try:
-            font_file_map = {
-                "Arial": "arial.ttf",
-                "Courier": "cour.ttf",
-                "Times New Roman": "times.ttf"
-            }
-            font_path = font_file_map.get(font_name, "arial.ttf")
+            # Dynamically find the full path to the system-installed font
+            font_path = fm.findfont(fm.FontProperties(family=font_name), fallback_to_default=True)
             font = ImageFont.truetype(font_path, font_sz)
-        except OSError:
+        except Exception as e:
+            print(f"Warning: Could not load font '{font_name}': {e}")
             font = ImageFont.load_default()
-        draw.text((x, y), text, fill=color, font=font)
-
+    
+    draw.text((x, y), text, fill=color, font=font)
     # Saving the final image
     img.save(output_path)
 
