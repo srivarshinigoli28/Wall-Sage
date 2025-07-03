@@ -9,7 +9,7 @@ def setup_stroke_bindings(canvas, drawing_lines, history_stack, state):
         current_line = [(event.x, event.y)]
 
     def draw(event):
-        if current_line:
+        if current_line and not state["dragging_text"]:
             x1, y1 = current_line[-1]
             x2, y2 = event.x, event.y
             color = "white" if state["eraser_mode"] else state["current_color"]
