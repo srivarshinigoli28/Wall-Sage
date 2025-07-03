@@ -5,6 +5,7 @@ from tkinter import ttk, font
 from erase_tool import toggle_eraser
 from undo_redo import undo, redo
 from wallpaper_utils import save_canvas_as_image, set_as_wallpaper
+from datetime import datetime
 
 def setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_stack, state):
     # toolbar
@@ -90,7 +91,14 @@ def setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_s
     tk.Button(toolbar, text="Redo", command=lambda: redo(canvas, drawing_lines, text_items, history_stack, redo_stack)).pack(pady=5)
 
     def save_wallpaper_action():
-        output_path = "output_wallpaper.png"
+        
+        # Ensure the wallpapers directory exists
+        os.makedirs("wallpapers", exist_ok=True)
+
+        # Generate a unique timestamped filename
+        timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        output_path = os.path.join("wallpapers", f"wallpaper_{timestamp}.png")
+
         save_canvas_as_image(
             canvas.winfo_width(),
             canvas.winfo_height(),
@@ -104,7 +112,10 @@ def setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_s
     # tk.Button(toolbar, text="Save Wallpaper", command=save_wallpaper_action).pack(pady=10)
 
     def set_wallpaper_action():
-        output_path = "output_wallpaper.png"
+        os.makedirs("wallpapers", exist_ok=True)
+        timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        output_path = os.path.join("wallpapers", f"wallpaper_{timestamp}.png")
+
         save_canvas_as_image(
             canvas.winfo_width(),
             canvas.winfo_height(),
@@ -114,7 +125,7 @@ def setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_s
             output_path
         )
         set_as_wallpaper(os.path.abspath(output_path))
-        print("Wallpaper set successfully!")
+
 
     tk.Button(toolbar, text="Set as Wallpaper", command=set_wallpaper_action).pack(pady=10)
 
