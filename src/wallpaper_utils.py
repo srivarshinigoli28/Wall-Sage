@@ -29,7 +29,7 @@ def save_canvas_as_image(canvas_width, canvas_height, bg_img, drawing_lines, tex
             print(f"Warning: Could not load font '{font_name}': {e}")
             font = ImageFont.load_default()
     
-    draw.text((x, y), text, fill=color, font=font)
+        draw.text((x, y), text, fill=color, font=font)
     # Saving the final image
     img.save(output_path)
 
