@@ -77,4 +77,23 @@ setup_stroke_bindings(canvas, drawing_lines, history_stack, state)
 setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_stack, state)
 setup_text_tool(canvas, root, text_items, history_stack, state)
 
+# import threading
+# import time
+# from plyer import notification
+
+# def show_reminder():
+#     while True:
+#         # displayin
+#         time.sleep(3600)
+
+#         notification.notify(
+#             title="Wall Sage",
+#             message="You might want to check your wallpaper. Get your tasks done!",
+#             timeout=10  # seconds the notification stays visible
+#         )
+
+# # Start the notification thread in background
+# reminder_thread = threading.Thread(target=show_reminder, daemon=True)
+# reminder_thread.start()
+
 root.mainloop()
