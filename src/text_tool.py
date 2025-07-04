@@ -13,6 +13,8 @@ def setup_text_tool(canvas, root, text_items, history_stack, state):
         popup.overrideredirect(True)
         popup.geometry(f"+{x + root.winfo_rootx()}+{y + root.winfo_rooty()}")
 
+        state.setdefault("active_popups", []).append(popup)
+        
         max_lines = 5
         min_lines = 1
 

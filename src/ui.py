@@ -71,7 +71,8 @@ def setup_toolbar(root, canvas, drawing_lines, text_items, history_stack, redo_s
         to=72,
         orient="horizontal",
         length=150,
-        showvalue=True,
+        showvalue=False,
+        troughcolor="#e0e0e0",
         command=lambda val: state.update({"font_size": int(val)})
     )
     font_size_slider.set(state["font_size"])

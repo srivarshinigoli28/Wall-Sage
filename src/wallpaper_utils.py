@@ -51,6 +51,10 @@ def load_last_wallpaper():
     return None
 
 def set_and_save_wallpaper(canvas, drawing_lines, text_items, state):
+    for popup in state.get("active_popups", []):
+        if popup.winfo_exists():
+            popup.destroy()
+    state["active_popups"] = []
     os.makedirs("wallpapers", exist_ok=True)
     timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     output_path = os.path.join("wallpapers", f"wallpaper_{timestamp}.png")
@@ -86,3 +90,8 @@ def reset_canvas(canvas, drawing_lines, text_items, history_stack, redo_stack, s
     state["bg_tk"] = bg_tk
     canvas.delete("all")
     canvas.create_image(0, 0, anchor="nw", image=bg_tk)
+
+    for popup in state.get("active_popups", []):
+        if popup.winfo_exists():
+            popup.destroy()
+    state["active_popups"] = []
